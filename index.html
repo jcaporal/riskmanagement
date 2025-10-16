@@ -72,6 +72,16 @@
         .cycle-step {
             position: relative;
             z-index: 10;
+            cursor: pointer; /* Makes it visually obvious it's clickable */
+            transition: all 0.2s;
+        }
+        .cycle-step:hover {
+            transform: scale(1.03);
+            background-color: #50b3db !important; /* Slightly darker accent blue on hover */
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+        }
+        .cycle-step.active {
+            background-color: #1d364e !important; /* Dark color when active */
         }
         .cycle-step::after {
             content: '→';
@@ -198,6 +208,67 @@
         });
 
         // =============================================================
+        // SECTION 2: INTERACTIVE CYCLE LOGIC
+        // =============================================================
+        const cycleSteps = {
+            1: {
+                title: "🔍 1. Identify Risk",
+                color: 'bg-accent-blue',
+                content: `
+                    <p class="font-body text-base"><strong>Focus:</strong> Define the uncertain event and its <strong>Type</strong> (Threat or Opportunity) and the <strong>three characteristics</strong> (Event, Impact, Probability).</p>
+                    <p class="font-body text-sm mt-1"><strong>Your Action:</strong> This is the crucial first step where you move from worry to clarity. Log the details in a format like a Risk Register.</p>
+                `
+            },
+            2: {
+                title: "📊 2. Analyze & Prioritize",
+                color: 'bg-accent-blue',
+                content: `
+                    <p class="font-body text-base"><strong>Focus:</strong> Score the risk numerically using the <strong>P x I Matrix</strong> (Probability multiplied by Impact).</p>
+                    <p class="font-body text-sm mt-1"><strong>Your Action:</strong> Determine the priority zone (Green, Yellow, or Red). This score instantly assigns the correct strategic <strong>Mandate</strong> (e.g., AVOID, MITIGATE, EXPLOIT).</p>
+                `
+            },
+            3: {
+                title: "🛠️ 3. Plan Response",
+                color: 'bg-accent-blue',
+                content: `
+                    <p class="font-body text-base"><strong>Focus:</strong> Select the precise strategy (e.g., Avoid, Enhance, Transfer) and define the executable action required.</p>
+                    <p class="font-body text-sm mt-1"><strong>Your Action:</strong> Develop a specific, measurable initial action item. For example, if your mandate is MITIGATE, your action might be to launch a cross-training program.</p>
+                `
+            },
+            4: {
+                title: "🔄 4. Monitor & Control",
+                color: 'bg-accent-blue',
+                content: `
+                    <p class="font-body text-base"><strong>Focus:</strong> Track the risk owner and action status weekly to confirm the strategy is working and the score hasn't changed.</p>
+                    <p class="font-body text-sm mt-1"><strong>Your Action:</strong> If the risk score changes or the required response exceeds your authority/budget, you must <strong>ESCALATE</strong> the risk to senior leadership.</p>
+                `
+            }
+        };
+
+        function showCycleExplanation(stepIndex) {
+            const explainer = document.getElementById('cycle_explanation');
+            const steps = document.querySelectorAll('.cycle-step');
+            
+            // Remove 'active' class from all steps
+            steps.forEach(step => step.classList.remove('active', 'bg-primary-dark'));
+            
+            // Add 'active' class to the clicked step
+            const currentStep = document.getElementById(`cycle-step-${stepIndex}`);
+            currentStep.classList.add('active', 'bg-primary-dark');
+
+            const data = cycleSteps[stepIndex];
+
+            explainer.innerHTML = `
+                <div class="p-4 rounded-xl border-l-4 border-accent-blue bg-white shadow-lg transition-opacity duration-300">
+                    <h4 class="font-header text-xl font-bold text-primary-dark mb-2">${data.title}</h4>
+                    ${data.content}
+                </div>
+            `;
+            explainer.style.opacity = 1;
+        }
+
+
+        // =============================================================
         // STEP 1: CALCULATE MANDATE (Section 4)
         // =============================================================
         function calculateRiskResponse() {
@@ -266,7 +337,7 @@
                 <p class="text-xl font-header font-bold text-primary-dark mb-3">Your Mandate is: <span class="p-1 rounded-md ${strategyClass}">${strategy}</span></p>
                 
                 <h4 class="font-body text-lg font-semibold mt-3">STEP 2: Define Your Initial Action:</h4>
-                <p class="text-sm text-gray-600 mb-2">Write the specific action you will take to execute the <strong>${strategy}</strong> mandate.</p>
+                <p class="text-sm text-gray-600 mb-2">Write the specific action you will take to execute the <strong>${strategy}</strong> mandate. (This is the <strong>Plan Response</strong> step from the Risk Cycle!)</p>
                 
                 <input type="text" id="learner_action_input" placeholder="Ex: Launch cross-training program by EOW."
                        class="w-full p-2 border-2 border-gray-300 rounded-lg font-body focus:ring-accent-blue focus:border-accent-blue mb-3">
@@ -315,7 +386,7 @@
             
             // 2. Update feedback box
             feedbackBox.className = 'mt-4 p-4 rounded-xl bg-accent-blue/10 border border-accent-blue shadow-lg'; /* Reduced padding */
-            feedbackBox.innerHTML = `<p class="text-lg font-bold text-primary-dark">✅ Risk #${id} Logged! You chose the action: "${specificAction}". Ready for your next risk!</p>`;
+            feedbackBox.innerHTML = `<p class="text-lg font-bold text-primary-dark">✅ Risk #${id} Logged! You chose the action: "${specificAction}". (Ready to <strong>Monitor & Control</strong>!) Ready for your next risk!</p>`;
             
             // 3. Clean up and prepare for next risk
             riskIdCounter++;
@@ -387,11 +458,11 @@
             <!-- T/O IDENTIFICATION EXPLANATION (INTEGRATED) -->
             <div class="mt-6 p-4 rounded-xl shadow-inner border border-gray-300 max-w-4xl mx-auto flex">
                 <div class="w-1/2 p-2 border-r border-gray-300">
-                    <h4 class="font-header text-base font-bold text-threat-red flex items-center mb-1"><span class="text-xl mr-2">🔻</span> Threat (Negative)</h4>
+                    <h4 class="font-header text-base font-bold text-threat-red flex items-center mb-1"><span class="text-xl mr-2 text-threat-red">🔻</span> Threat (Negative)</h4>
                     <p class="font-body text-xs text-gray-700">An event that, if it occurs, will have a <strong>detrimental impact</strong> on our objectives (e.g., staff attrition spikes).</p>
                 </div>
                 <div class="w-1/2 p-2">
-                    <h4 class="font-header text-base font-bold text-accent-blue flex items-center mb-1"><span class="text-xl mr-2">🔺</span> Opportunity (Positive)</h4>
+                    <h4 class="font-header text-base font-bold text-accent-blue flex items-center mb-1"><span class="text-xl mr-2 text-accent-blue">🔺</span> Opportunity (Positive)</h4>
                     <p class="font-body text-xs text-gray-700">An event that, if it occurs, will have a <strong>beneficial impact</strong> on our objectives (e.g., a new process cuts delivery time in half).</p>
                 </div>
             </div>
@@ -408,26 +479,39 @@
                 2. The 4-Step Confidence Flow (The Risk Cycle)
             </h2>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center"> <!-- Reduced gap -->
-                <div class="cycle-step bg-accent-blue p-3 rounded-xl text-white font-header shadow-lg"> <!-- Reduced padding -->
+                
+                <!-- STEP 1: Identify Risk -->
+                <div id="cycle-step-1" onclick="showCycleExplanation(1)" class="cycle-step bg-accent-blue p-3 rounded-xl text-white font-header shadow-lg"> <!-- Added ID and onclick -->
                     <div class="text-3xl mb-1">🔍</div> <!-- Reduced icon size -->
                     <span class="font-bold text-base">1. Identify Risk</span> <!-- Reduced font size -->
                 </div>
-                <div class="cycle-step bg-accent-blue p-3 rounded-xl text-white font-header shadow-lg"> <!-- Reduced padding -->
+                
+                <!-- STEP 2: Analyze & Prioritize -->
+                <div id="cycle-step-2" onclick="showCycleExplanation(2)" class="cycle-step bg-accent-blue p-3 rounded-xl text-white font-header shadow-lg"> <!-- Added ID and onclick -->
                     <div class="text-3xl mb-1">📊</div> <!-- Reduced icon size -->
                     <span class="font-bold text-base">2. Analyze & Prioritize</span> <!-- Reduced font size -->
                 </div>
-                <div class="cycle-step bg-accent-blue p-3 rounded-xl text-white font-header shadow-lg"> <!-- Reduced padding -->
+                
+                <!-- STEP 3: Plan Response -->
+                <div id="cycle-step-3" onclick="showCycleExplanation(3)" class="cycle-step bg-accent-blue p-3 rounded-xl text-white font-header shadow-lg"> <!-- Added ID and onclick -->
                     <div class="text-3xl mb-1">🛠️</div> <!-- Reduced icon size -->
                     <span class="font-bold text-base">3. Plan Response</span> <!-- Reduced font size -->
                 </div>
-                <div class="cycle-step bg-accent-blue p-3 rounded-xl text-white font-header shadow-lg"> <!-- Reduced padding -->
+                
+                <!-- STEP 4: Monitor & Control -->
+                <div id="cycle-step-4" onclick="showCycleExplanation(4)" class="cycle-step bg-accent-blue p-3 rounded-xl text-white font-header shadow-lg"> <!-- Added ID and onclick -->
                     <div class="text-3xl mb-1">🔄</div> <!-- Reduced icon size -->
                     <span class="font-bold text-base">4. Monitor & Control</span> <!-- Reduced font size -->
                 </div>
             </div>
-             <p class="font-body text-base mt-4 text-white text-center italic"> <!-- Reduced font size -->
-                This continuous loop is how we <strong>build organizational confidence and trust.</strong>
-            </p>
+
+            <!-- Cycle Explanation Box (Starts Empty) -->
+            <div id="cycle_explanation" class="mt-6">
+                <p class="font-body text-base text-white text-center italic p-3 border border-white/50 rounded-xl">
+                    Click any step above to see your management focus for that stage of the Risk Cycle!
+                </p>
+            </div>
+            <!-- End Cycle Explanation Box -->
         </section>
 
         <!-- SECTION 3: P/I ANALYSIS & STRATEGIES (New combined section) -->
@@ -442,32 +526,28 @@
 
             <!-- SCORING CRITERIA TABLES (Moved from old Section 4) -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto mb-6"> <!-- Reduced gap/margin -->
-                <!-- IMPACT CRITERIA -->
+                <!-- IMPACT CRITERIA (Modified to Single Column List) -->
                 <div class="bg-threat-red/10 p-4 rounded-xl border border-threat-red shadow-md"> <!-- Reduced padding -->
                     <h3 class="font-header text-base font-bold mb-2 text-threat-red flex items-center"><span class="text-xl mr-2">🎯</span> Impact Scoring (1-5)</h3> <!-- Reduced font size -->
-                    <table class="w-full text-left text-sm font-body">
-                        <tbody>
-                            <tr><td class="py-0 text-xs"><strong class="font-bold">5</strong></td><td class="py-0 text-xs">Goal impossible; client loss or major breach.</td></tr>
-                            <tr><td class="py-0 text-xs"><strong class="font-bold">4</strong></td><td class="py-0 text-xs">Severe challenge; major delay or significant financial penalty.</td></tr>
-                            <tr><td class="py-0 text-xs"><strong class="font-bold">3</strong></td><td class="py-0 text-xs">Noticeable impact; minor schedule delay or budget overrun (5-10%).</td></tr>
-                            <tr><td class="py-0 text-xs"><strong class="font-bold">2</strong></td><td class="py-0 text-xs">Minimal disruption; absorbed within current team capacity.</td></tr>
-                            <tr><td class="py-0 text-xs"><strong>1</strong></td><td class="py-0 text-xs">No measurable effect on project.</td></tr>
-                        </tbody>
-                    </table>
+                    <div class="space-y-1">
+                        <div class="py-0 text-xs space-x-1"><strong class="font-bold">5</strong><span>— Goal impossible; client loss or major breach.</span></div>
+                        <div class="py-0 text-xs space-x-1"><strong class="font-bold">4</strong><span>— Severe challenge; major delay or significant financial penalty.</span></div>
+                        <div class="py-0 text-xs space-x-1"><strong class="font-bold">3</strong><span>— Noticeable impact; minor schedule delay or budget overrun (5-10%).</span></div>
+                        <div class="py-0 text-xs space-x-1"><strong class="font-bold">2</strong><span>— Minimal disruption; absorbed within current team capacity.</span></div>
+                        <div class="py-0 text-xs space-x-1"><strong class="font-bold">1</strong><span>— No measurable effect on project.</span></div>
+                    </div>
                 </div>
 
-                <!-- PROBABILITY CRITERIA -->
+                <!-- PROBABILITY CRITERIA (Modified to Single Column List) -->
                 <div class="bg-accent-blue/10 p-4 rounded-xl border border-accent-blue shadow-md"> <!-- Reduced padding -->
                     <h3 class="font-header text-base font-bold mb-2 text-accent-blue flex items-center"><span class="text-xl mr-2">⏱️</span> Probability Scoring (1-5)</h3> <!-- Reduced font size -->
-                    <table class="w-full text-left text-sm font-body">
-                        <tbody>
-                            <tr><td class="py-0 text-xs"><strong class="font-bold">5</strong></td><td class="py-0 text-xs">Almost certain; >80% chance (or has started).</td></tr>
-                            <tr><td class="py-0 text-xs"><strong class="font-bold">4</strong></td><td class="py-0 text-xs">Likely; 60%-80% chance based on trends/history.</td></tr>
-                            <tr><td class="py-0 text-xs"><strong class="font-bold">3</strong></td><td class="py-0 text-xs">Possible; 40%-60% chance; a toss-up.</td></tr>
-                            <tr><td class="py-0 text-xs"><strong class="font-bold">2</strong></td><td class="py-0 text-xs">Unlikely; 20%-40% chance; specific conditions must align.</td></tr>
-                            <tr><td class="py-0 text-xs"><strong>1</strong></td><td class="py-0 text-xs">Rare; <20% chance; theoretical but unlikely to occur.</td></tr>
-                        </tbody>
-                    </table>
+                    <div class="space-y-1">
+                        <div class="py-0 text-xs space-x-1"><strong class="font-bold">5</strong><span>— Almost certain; >80% chance (or has started).</span></div>
+                        <div class="py-0 text-xs space-x-1"><strong class="font-bold">4</strong><span>— Likely; 60%-80% chance based on trends/history.</span></div>
+                        <div class="py-0 text-xs space-x-1"><strong class="font-bold">3</strong><span>— Possible; 40%-60% chance; a toss-up.</span></div>
+                        <div class="py-0 text-xs space-x-1"><strong class="font-bold">2</strong><span>— Unlikely; 20%-40% chance; specific conditions must align.</span></div>
+                        <div class="py-0 text-xs space-x-1"><strong class="font-bold">1</strong><span>— Rare; <20% chance; theoretical but unlikely to occur.</span></div>
+                    </div>
                 </div>
             </div>
             <!-- END SCORING CRITERIA TABLES -->
