@@ -286,7 +286,7 @@
 
             if (probability < 1 || impact < 1 || !riskType) {
                 feedbackBox.innerHTML = `<p class="text-lg font-bold text-threat-red">⚠️ Please select a risk type and both a Probability and Impact score (1-5).</p>`;
-                feedbackBox.className = 'mt-4 p-4 rounded-xl bg-red-100/70 border border-threat-red shadow-lg';
+                feedbackBox.className = 'mt-4 p-3 rounded-xl bg-red-100/70 border border-threat-red shadow-lg';
                 return;
             }
 
@@ -405,7 +405,7 @@
 
     <div class="max-w-4xl mx-auto p-4 md:p-6"> <!-- Reduced overall padding -->
         <!-- HEADER / INTRODUCTION -->
-        <header class="text-center mb-8 py-8 bg-primary-dark rounded-xl shadow-2xl relative overflow-hidden"> <!-- Reduced padding/margin -->
+        <header class="text-center mb-8 py-12 bg-primary-dark rounded-xl shadow-2xl relative overflow-hidden"> <!-- Increased py- padding for spacing -->
             <!-- Decorative Pattern -->
             <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(white 1px, transparent 1px); background-size: 8px 8px;"></div>
             <h1 class="font-header text-4xl md:text-5xl font-black text-white mb-1 tracking-wider relative z-10">
@@ -434,21 +434,21 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4"> <!-- Reduced gap -->
                 <!-- Risk Event Card -->
                 <div class="info-card p-4 bg-white rounded-xl shadow-lg border-b-4 border-accent-blue"> <!-- Reduced padding -->
-                    <div class="text-2xl mb-1 text-primary-dark font-bold font-header flex items-center"> <!-- Reduced font size -->
+                    <div class="text-2xl mb-1 text-primary-dark font-bold font-header flex items-center"> 
                         <span class="mr-2 text-accent-blue">🎯</span> Event
                     </div>
                     <p class="font-body text-sm">The specific uncertain situation that might happen. It names <strong>WHAT</strong> we’re facing, moving us from worry to action.</p>
                 </div>
                 <!-- Impact Card -->
                 <div class="info-card p-4 bg-white rounded-xl shadow-lg border-b-4 border-threat-red"> <!-- Reduced padding -->
-                    <div class="text-2xl mb-1 text-primary-dark font-bold font-header flex items-center"> <!-- Reduced font size -->
+                    <div class="text-2xl mb-1 text-primary-dark font-bold font-header flex items-center"> 
                         <span class="mr-2 text-threat-red">📉</span> Impact
                     </div>
                     <p class="font-body text-sm">The size of the consequence on our goals. It determines the <strong>magnitude</strong> of <strong>stability or growth</strong> that is truly at stake.</p>
                 </div>
                 <!-- Probability Card -->
                 <div class="info-card p-4 bg-white rounded-xl shadow-lg border-b-4 border-opportunity-yellow"> <!-- Reduced padding -->
-                    <div class="text-2xl mb-1 text-primary-dark font-bold font-header flex items-center"> <!-- Reduced font size -->
+                    <div class="text-2xl mb-1 text-primary-dark font-bold font-header flex items-center"> 
                         <span class="mr-2 text-opportunity-yellow">⏳</span> Probability
                     </div>
                     <p class="font-body text-sm">The likelihood of the event actually happening. It tells you the <strong>urgency</strong>—where to focus your energy.</p>
@@ -456,7 +456,7 @@
             </div>
             
             <!-- T/O IDENTIFICATION EXPLANATION (INTEGRATED) -->
-            <div class="mt-6 p-4 rounded-xl shadow-inner border border-gray-300 max-w-4xl mx-auto flex">
+            <div class="mt-6 p-4 rounded-xl bg-primary-dark/5 shadow-inner border border-gray-300 max-w-4xl mx-auto flex">
                 <div class="w-1/2 p-2 border-r border-gray-300">
                     <h4 class="font-header text-base font-bold text-threat-red flex items-center mb-1"><span class="text-xl mr-2 text-threat-red">🔻</span> Threat (Negative)</h4>
                     <p class="font-body text-xs text-gray-700">An event that, if it occurs, will have a <strong>detrimental impact</strong> on our objectives (e.g., staff attrition spikes).</p>
@@ -552,7 +552,7 @@
             </div>
             <!-- END SCORING CRITERIA TABLES -->
 
-            <!-- ** VISUAL P/I MATRIX (Moved from old Section 4) ** -->
+            <!-- ** VISUAL P/I MATRIX ** -->
             <div class="mb-6">
                 <h3 class="font-header text-lg font-bold mb-3 text-primary-dark text-center">Mandate Zones (P x I Score)</h3>
                 <div class="pi-matrix">
@@ -774,14 +774,19 @@
             </div>
         </section>
 
-        <!-- CONCLUSION -->
-        <footer class="text-center pt-6 pb-3"> <!-- Reduced padding -->
+        <!-- CONCLUSION & CALL TO ACTION (SIMPLIFIED) -->
+        <footer class="text-center pt-6 pb-3">
             <p class="font-header text-3xl font-extrabold text-primary-dark">
                 You're set!
             </p>
-            <p class="font-body text-base font-semibold text-primary-dark mt-2"> <!-- Reduced font size -->
-                By following this playbook, you’re actively <strong>fostering a culture of resilience, protecting your team, and taking ownership</strong> of our shared success across the entire Enterprise!
+            <p class="font-body text-base font-semibold text-primary-dark mt-2 mb-6">
+                By following this playbook, you’re actively <strong>fostering a culture of resilience, protecting your team, and taking ownership</strong> of our shared success across <strong>Enshored</strong>!
             </p>
+
+            <!-- SIMPLIFIED CALL TO ACTION BUTTON (One-line code for the link) -->
+            <div class="max-w-xs mx-auto mt-6"> 
+                <a href="#" class="action-button inline-flex items-center justify-center w-full p-4 font-header text-xl font-bold text-white bg-threat-red rounded-xl shadow-shadow-color hover:bg-threat-red/90 transition-colors">RETURN TO LINKEDIN LEARNING TO COMPLETE</a>
+            </div>
         </footer>
     </div>
 </body>
