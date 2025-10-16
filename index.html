@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Risk Management Playbook</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Poppins (Headers) and Lora (Body) Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Custom styles to apply fonts */
+        .font-header {
+            font-family: 'Poppins', sans-serif;
+        }
+        .font-body {
+            font-family: 'Lora', serif;
+        }
+        
+        /* Custom background pattern for the body */
+        body {
+            background-image: radial-gradient(#f2efeb 1px, transparent 1px);
+            background-size: 20px 20px;
+            background-color: #f2efeb;
+        }
+
+        /* Style for the scroll indicator */
+        .scroll-indicator {
+            height: 6px; /* Slightly thicker */
+            background-color: #50b3db; /* Accent Blue */
+            width: 0%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 50;
+            transition: width 0.3s ease-out; /* Smoother transition */
+        }
+        .icon-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 3rem; /* Compacted */
+            height: 3rem; /* Compacted */
+            border-radius: 50%;
+            font-size: 1.5rem; /* Compacted */
+            color: white;
+            flex-shrink: 0;
+            margin-right: 0.75rem; /* Compacted */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* CARD ENHANCEMENTS */
+        .info-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: default;
+        }
+        .info-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        /* --- UPDATED MATRIX COLORS (Stoplight Scheme) --- */
+        .low-zone { background-color: #a2c62c; color: #1d364e; } /* TRACK & MONITOR (New Green) */
+        .medium-zone { background-color: #ffda3c; color: #1d364e; } /* ACTIVE ATTENTION (Yellow) */
+        .high-zone { background-color: #e83760; color: white; } /* HIGH PRIORITY (Red) */
+        /* ------------------------------------------------ */
+
+        /* Enhanced Cycle Step Styling */
+        .cycle-step {
+            position: relative;
+            z-index: 10;
+        }
+        .cycle-step::after {
+            content: '→';
+            position: absolute;
+            top: 50%;
+            right: -10%; /* Positioned to the right */
+            transform: translateY(-50%);
+            font-size: 2rem;
+            color: #50b3db;
+            z-index: 5;
+            display: none; /* Hidden by default on small screens */
+        }
+        @media (min-width: 768px) {
+            .cycle-step::after {
+                display: block; /* Show on medium screens and up */
+            }
+            .cycle-step:last-child::after {
+                content: ''; /* Hide arrow on the last step */
+            }
+        }
+
+        /* Button Enhancement */
+        .action-button {
+            transition: all 0.3s;
+            box-shadow: 0 4px #102638; /* Darker shadow for 3D press effect */
+        }
+        .action-button:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px #102638;
+        }
+        
+        /* Table Styling for Register */
+        .register-table th, .register-table td {
+            padding: 10px; /* Reduced padding */
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .register-table th {
+            background-color: #f2efeb;
+            color: #1d364e;
+            font-weight: 700;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.8rem; /* Reduced font size */
+            text-transform: uppercase;
+        }
+        .register-table tr:hover {
+            background-color: #f9fafb;
+        }
+
+        /* P/I Matrix Grid Styling */
+        .pi-matrix {
+            display: grid;
+            grid-template-columns: 0.2fr repeat(5, 1fr);
+            grid-template-rows: repeat(5, 1fr) 0.2fr;
+            width: 100%;
+            aspect-ratio: 1.2 / 1; 
+            max-width: 450px;
+            margin: 0 auto;
+            border: 1px solid #1d364e;
+        }
+        .pi-cell {
+            border: 1px solid rgba(29, 54, 78, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 3px;
+            text-align: center;
+        }
+        .pi-label-y {
+            grid-column: 1 / 2;
+            background-color: #1d364e;
+            color: white;
+            font-size: 0.6rem;
+        }
+        .pi-label-x {
+            grid-row: 6 / 7;
+            background-color: #1d364e;
+            color: white;
+            font-size: 0.6rem;
+        }
+        .pi-corner {
+            grid-column: 1 / 2;
+            grid-row: 6 / 7;
+            background-color: #1d364e;
+        }
+
+    </style>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-dark': '#1d364e', 
+                        'accent-blue': '#50b3db', 
+                        'threat-red': '#e83760', 
+                        'opportunity-yellow': '#ffda3c', 
+                        'bg-light': '#f2efeb', 
+                        'shadow-color': '#102638',
+                        'low-risk-green': '#a2c62c', // Added new green color
+                    },
+                }
+            }
+        }
+
+        // Global state for temporary risk data and counter
+        let riskIdCounter = 1;
+        let tempRisk = null; 
+
+        // JavaScript for Scroll Progress Indicator
+        document.addEventListener('DOMContentLoaded', () => {
+            const indicator = document.getElementById('scroll-indicator');
+            const updateScrollIndicator = () => {
+                const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                const scrollPosition = window.scrollY;
+                const progress = (scrollPosition / scrollHeight) * 100;
+                indicator.style.width = `${progress}%`;
+            };
+
+            window.addEventListener('scroll', updateScrollIndicator);
+            updateScrollIndicator(); // Initial call
+        });
+
+        // =============================================================
+        // STEP 1: CALCULATE MANDATE (Section 4)
+        // =============================================================
+        function calculateRiskResponse() {
+            const riskTypeSelect = document.getElementById('risk_type');
+            const probabilityInput = document.getElementById('probability');
+            const impactInput = document.getElementById('impact');
+            const riskDescriptionInput = document.getElementById('risk_description');
+
+            const riskType = riskTypeSelect.value;
+            const probability = parseInt(probabilityInput.value);
+            const impact = parseInt(impactInput.value);
+            const riskDescription = riskDescriptionInput.value.trim() || `Untitled Risk ${riskIdCounter}`;
+            
+            const feedbackBox = document.getElementById('feedback_box');
+
+            if (probability < 1 || impact < 1 || !riskType) {
+                feedbackBox.innerHTML = `<p class="text-lg font-bold text-threat-red">⚠️ Please select a risk type and both a Probability and Impact score (1-5).</p>`;
+                feedbackBox.className = 'mt-4 p-4 rounded-xl bg-red-100/70 border border-threat-red shadow-lg';
+                return;
+            }
+
+            const score = probability * impact;
+            let priority, strategy;
+            let strategyClass = ''; 
+
+            // --- P/I MATRIX LOGIC (Green <= 3, Yellow 4-15, Red >= 16) ---
+            if (score <= 3) {
+                priority = "Track & Monitor";
+                strategy = "ACCEPT";
+                strategyClass = 'bg-[#a2c62c] text-primary-dark'; // LOW RISK (Green)
+            } else if (score <= 15) {
+                priority = "Active Attention";
+                if (riskType === 'threat') {
+                    strategy = "MITIGATE / TRANSFER";
+                } else {
+                    strategy = "ENHANCE / SHARE";
+                }
+                strategyClass = 'bg-[#ffda3c] text-primary-dark'; // MEDIUM RISK (Yellow)
+            } else { // score >= 16
+                priority = "HIGH PRIORITY!";
+                if (riskType === 'threat') {
+                    strategy = "AVOID";
+                } else {
+                    strategy = "EXPLOIT";
+                }
+                strategyClass = 'bg-[#e83760] text-white'; // HIGH RISK (Red)
+            }
+            // --- END P/I MATRIX LOGIC ---
+            
+            // Store data globally for the next step
+            tempRisk = {
+                id: riskIdCounter,
+                description: riskDescription,
+                type: riskType,
+                P: probability,
+                I: impact,
+                score: score,
+                priority: priority,
+                strategy: strategy,
+                strategyClass: strategyClass
+            };
+            
+            // --- GENERATE STEP 2 (ACTION INPUT) ---
+            feedbackBox.className = 'mt-4 p-3 rounded-xl bg-primary-dark/10 border border-primary-dark shadow-lg'; /* Reduced padding */
+            feedbackBox.innerHTML = `
+                <p class="text-xl font-header font-bold text-primary-dark mb-3">Your Mandate is: <span class="p-1 rounded-md ${strategyClass}">${strategy}</span></p>
+                
+                <h4 class="font-body text-lg font-semibold mt-3">STEP 2: Define Your Initial Action:</h4>
+                <p class="text-sm text-gray-600 mb-2">Write the specific action you will take to execute the <strong>${strategy}</strong> mandate.</p>
+                
+                <input type="text" id="learner_action_input" placeholder="Ex: Launch cross-training program by EOW."
+                       class="w-full p-2 border-2 border-gray-300 rounded-lg font-body focus:ring-accent-blue focus:border-accent-blue mb-3">
+
+                <button onclick="stackRiskAction()"
+                        class="action-button w-full p-3 font-header text-lg font-bold text-white bg-accent-blue rounded-xl shadow-shadow-color hover:bg-primary-dark">
+                    CONFIRM ACTION & ADD TO REGISTER
+                </button>
+            `;
+            
+            document.getElementById('find_mandate_button').disabled = true;
+        }
+
+        // =============================================================
+        // STEP 2: STACK ACTION AND REGISTER
+        // =============================================================
+        function stackRiskAction() {
+            const specificAction = document.getElementById('learner_action_input').value.trim();
+            const feedbackBox = document.getElementById('feedback_box');
+            const registerBody = document.getElementById('risk_register_table_body');
+            const findMandateButton = document.getElementById('find_mandate_button');
+
+            if (!specificAction) {
+                feedbackBox.innerHTML = `<p class="text-lg font-bold text-threat-red">⚠️ Please enter a specific action plan before confirming.</p>`;
+                feedbackBox.className = 'mt-4 p-3 rounded-xl bg-red-100/70 border border-threat-red shadow-lg';
+                return;
+            }
+
+            // Use the stored tempRisk data
+            const { id, description, type, P, I, score, priority, strategy, strategyClass } = tempRisk;
+
+            // 1. Create the new row for the register
+            const newRow = registerBody.insertRow();
+            newRow.className = 'text-sm font-body';
+            
+            // Insert cells
+            newRow.insertCell(0).innerHTML = `<strong>${id}</strong>`;
+            newRow.insertCell(1).textContent = description;
+            newRow.insertCell(2).innerHTML = `<strong class="${type === 'threat' ? 'text-threat-red' : 'text-opportunity-yellow'}">${type === 'threat' ? 'T' : 'O'}</strong>`;
+            newRow.insertCell(3).textContent = P;
+            newRow.insertCell(4).textContent = I;
+            newRow.insertCell(5).innerHTML = `<strong>${score}</strong>`;
+            newRow.insertCell(6).innerHTML = `<strong>${priority}</strong>`;
+            newRow.insertCell(7).innerHTML = `<div class="p-1 rounded-md ${strategyClass} text-center font-semibold">${strategy}</div>`;
+            newRow.insertCell(8).textContent = specificAction; 
+            
+            // 2. Update feedback box
+            feedbackBox.className = 'mt-4 p-4 rounded-xl bg-accent-blue/10 border border-accent-blue shadow-lg'; /* Reduced padding */
+            feedbackBox.innerHTML = `<p class="text-lg font-bold text-primary-dark">✅ Risk #${id} Logged! You chose the action: "${specificAction}". Ready for your next risk!</p>`;
+            
+            // 3. Clean up and prepare for next risk
+            riskIdCounter++;
+            tempRisk = null;
+            document.getElementById('risk_description').value = '';
+            document.getElementById('risk_type').value = '';
+            findMandateButton.disabled = false;
+        }
+
+    </script>
+</head>
+
+<body class="text-primary-dark font-body antialiased">
+    <!-- Scroll Progress Indicator -->
+    <div id="scroll-indicator" class="scroll-indicator"></div>
+
+    <div class="max-w-4xl mx-auto p-4 md:p-6"> <!-- Reduced overall padding -->
+        <!-- HEADER / INTRODUCTION -->
+        <header class="text-center mb-8 py-8 bg-primary-dark rounded-xl shadow-2xl relative overflow-hidden"> <!-- Reduced padding/margin -->
+            <!-- Decorative Pattern -->
+            <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(white 1px, transparent 1px); background-size: 8px 8px;"></div>
+            <h1 class="font-header text-4xl md:text-5xl font-black text-white mb-1 tracking-wider relative z-10">
+                Risk Management Playbook
+            </h1>
+            <p class="text-lg md:text-xl font-body text-opportunity-yellow relative z-10 font-semibold">
+                Your Guide to Confident Decision-Making
+            </p>
+        </header>
+
+        <!-- INTRODUCTION/EMOTIONAL APPEAL -->
+        <section class="mb-8 p-5 bg-white rounded-xl shadow-xl border-l-8 border-accent-blue"> <!-- Reduced padding/margin -->
+            <h2 class="font-header text-2xl font-bold mb-3 text-primary-dark flex items-center"> <!-- Reduced header size -->
+                <span class="icon-box bg-accent-blue mr-3">💡</span>Why This Matters To You
+            </h2>
+            <p class="text-base"> <!-- Reduced body font size -->
+                Hey team! Risk management isn't just a process—it's about <strong>giving yourself and your team control</strong> over the future. It's the smart way to build stability, protect our talent, and make sure we hit our goals with confidence. This playbook helps you <strong>navigate potential bumps without stress</strong> and <strong>embrace exciting opportunities</strong> for growth. Let's lead the way!
+            </p>
+        </section>
+
+        <!-- SECTION 1: THE CORE OF RISK (CHARACTERISTICS & ID CHECK) -->
+        <section class="mb-8"> <!-- Reduced margin -->
+            <h2 class="font-header text-2xl font-extrabold mb-6 text-primary-dark text-center"> <!-- Reduced header size -->
+                1. Defining Risk: Gaining Clarity
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4"> <!-- Reduced gap -->
+                <!-- Risk Event Card -->
+                <div class="info-card p-4 bg-white rounded-xl shadow-lg border-b-4 border-accent-blue"> <!-- Reduced padding -->
+                    <div class="text-2xl mb-1 text-primary-dark font-bold font-header flex items-center"> <!-- Reduced font size -->
+                        <span class="mr-2 text-accent-blue">🎯</span> Event
+                    </div>
+                    <p class="font-body text-sm">The specific uncertain situation that might happen. It names <strong>WHAT</strong> we’re facing, moving us from worry to action.</p>
+                </div>
+                <!-- Impact Card -->
+                <div class="info-card p-4 bg-white rounded-xl shadow-lg border-b-4 border-threat-red"> <!-- Reduced padding -->
+                    <div class="text-2xl mb-1 text-primary-dark font-bold font-header flex items-center"> <!-- Reduced font size -->
+                        <span class="mr-2 text-threat-red">📉</span> Impact
+                    </div>
+                    <p class="font-body text-sm">The size of the consequence on our goals. It determines the <strong>magnitude</strong> of <strong>stability or growth</strong> that is truly at stake.</p>
+                </div>
+                <!-- Probability Card -->
+                <div class="info-card p-4 bg-white rounded-xl shadow-lg border-b-4 border-opportunity-yellow"> <!-- Reduced padding -->
+                    <div class="text-2xl mb-1 text-primary-dark font-bold font-header flex items-center"> <!-- Reduced font size -->
+                        <span class="mr-2 text-opportunity-yellow">⏳</span> Probability
+                    </div>
+                    <p class="font-body text-sm">The likelihood of the event actually happening. It tells you the <strong>urgency</strong>—where to focus your energy.</p>
+                </div>
+            </div>
+            
+            <!-- T/O IDENTIFICATION EXPLANATION (INTEGRATED) -->
+            <div class="mt-6 p-4 rounded-xl shadow-inner border border-gray-300 max-w-4xl mx-auto flex">
+                <div class="w-1/2 p-2 border-r border-gray-300">
+                    <h4 class="font-header text-base font-bold text-threat-red flex items-center mb-1"><span class="text-xl mr-2">🔻</span> Threat (Negative)</h4>
+                    <p class="font-body text-xs text-gray-700">An event that, if it occurs, will have a <strong>detrimental impact</strong> on our objectives (e.g., staff attrition spikes).</p>
+                </div>
+                <div class="w-1/2 p-2">
+                    <h4 class="font-header text-base font-bold text-accent-blue flex items-center mb-1"><span class="text-xl mr-2">🔺</span> Opportunity (Positive)</h4>
+                    <p class="font-body text-xs text-gray-700">An event that, if it occurs, will have a <strong>beneficial impact</strong> on our objectives (e.g., a new process cuts delivery time in half).</p>
+                </div>
+            </div>
+            <p class="text-sm italic mt-4 text-center text-primary-dark/80 font-semibold"> <!-- Reduced font size/margin -->
+                <strong>Action Item:</strong> To effectively manage uncertainty, both <strong>Threats</strong> and <strong>Opportunities</strong> must be identified and defined.
+            </p>
+            <!-- END T/O IDENTIFICATION EXPLANATION -->
+
+        </section>
+
+        <!-- SECTION 2: THE 4-STEP CONFIDENCE FLOW (CYCLE) -->
+        <section class="mb-8 p-5 bg-primary-dark/95 rounded-xl shadow-2xl"> <!-- Reduced padding/margin -->
+            <h2 class="font-header text-2xl font-extrabold mb-6 text-white text-center"> <!-- Reduced header size -->
+                2. The 4-Step Confidence Flow (The Risk Cycle)
+            </h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center"> <!-- Reduced gap -->
+                <div class="cycle-step bg-accent-blue p-3 rounded-xl text-white font-header shadow-lg"> <!-- Reduced padding -->
+                    <div class="text-3xl mb-1">🔍</div> <!-- Reduced icon size -->
+                    <span class="font-bold text-base">1. Identify Risk</span> <!-- Reduced font size -->
+                </div>
+                <div class="cycle-step bg-accent-blue p-3 rounded-xl text-white font-header shadow-lg"> <!-- Reduced padding -->
+                    <div class="text-3xl mb-1">📊</div> <!-- Reduced icon size -->
+                    <span class="font-bold text-base">2. Analyze & Prioritize</span> <!-- Reduced font size -->
+                </div>
+                <div class="cycle-step bg-accent-blue p-3 rounded-xl text-white font-header shadow-lg"> <!-- Reduced padding -->
+                    <div class="text-3xl mb-1">🛠️</div> <!-- Reduced icon size -->
+                    <span class="font-bold text-base">3. Plan Response</span> <!-- Reduced font size -->
+                </div>
+                <div class="cycle-step bg-accent-blue p-3 rounded-xl text-white font-header shadow-lg"> <!-- Reduced padding -->
+                    <div class="text-3xl mb-1">🔄</div> <!-- Reduced icon size -->
+                    <span class="font-bold text-base">4. Monitor & Control</span> <!-- Reduced font size -->
+                </div>
+            </div>
+             <p class="font-body text-base mt-4 text-white text-center italic"> <!-- Reduced font size -->
+                This continuous loop is how we <strong>build organizational confidence and trust.</strong>
+            </p>
+        </section>
+
+        <!-- SECTION 3: P/I ANALYSIS & STRATEGIES (New combined section) -->
+        <section class="mb-8 p-5 bg-white rounded-xl shadow-2xl"> <!-- Reduced padding/margin -->
+            <h2 class="font-header text-2xl font-extrabold mb-5 text-primary-dark text-center"> <!-- Reduced header size, adjusted margin -->
+                3. Analyzing Risk: Score & Strategy Mandates
+            </h2>
+            
+            <p class="font-body text-base mb-4 text-center">
+                Before choosing a plan, we need to quickly score the risk. Use these criteria to determine your risk's priority level. The score tells you <strong>exactly</strong> what level of action is mandated.
+            </p>
+
+            <!-- SCORING CRITERIA TABLES (Moved from old Section 4) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto mb-6"> <!-- Reduced gap/margin -->
+                <!-- IMPACT CRITERIA -->
+                <div class="bg-threat-red/10 p-4 rounded-xl border border-threat-red shadow-md"> <!-- Reduced padding -->
+                    <h3 class="font-header text-base font-bold mb-2 text-threat-red flex items-center"><span class="text-xl mr-2">🎯</span> Impact Scoring (1-5)</h3> <!-- Reduced font size -->
+                    <table class="w-full text-left text-sm font-body">
+                        <tbody>
+                            <tr><td class="py-0 text-xs"><strong class="font-bold">5</strong></td><td class="py-0 text-xs">Goal impossible; client loss or major breach.</td></tr>
+                            <tr><td class="py-0 text-xs"><strong class="font-bold">4</strong></td><td class="py-0 text-xs">Severe challenge; major delay or significant financial penalty.</td></tr>
+                            <tr><td class="py-0 text-xs"><strong class="font-bold">3</strong></td><td class="py-0 text-xs">Noticeable impact; minor schedule delay or budget overrun (5-10%).</td></tr>
+                            <tr><td class="py-0 text-xs"><strong class="font-bold">2</strong></td><td class="py-0 text-xs">Minimal disruption; absorbed within current team capacity.</td></tr>
+                            <tr><td class="py-0 text-xs"><strong>1</strong></td><td class="py-0 text-xs">No measurable effect on project.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- PROBABILITY CRITERIA -->
+                <div class="bg-accent-blue/10 p-4 rounded-xl border border-accent-blue shadow-md"> <!-- Reduced padding -->
+                    <h3 class="font-header text-base font-bold mb-2 text-accent-blue flex items-center"><span class="text-xl mr-2">⏱️</span> Probability Scoring (1-5)</h3> <!-- Reduced font size -->
+                    <table class="w-full text-left text-sm font-body">
+                        <tbody>
+                            <tr><td class="py-0 text-xs"><strong class="font-bold">5</strong></td><td class="py-0 text-xs">Almost certain; >80% chance (or has started).</td></tr>
+                            <tr><td class="py-0 text-xs"><strong class="font-bold">4</strong></td><td class="py-0 text-xs">Likely; 60%-80% chance based on trends/history.</td></tr>
+                            <tr><td class="py-0 text-xs"><strong class="font-bold">3</strong></td><td class="py-0 text-xs">Possible; 40%-60% chance; a toss-up.</td></tr>
+                            <tr><td class="py-0 text-xs"><strong class="font-bold">2</strong></td><td class="py-0 text-xs">Unlikely; 20%-40% chance; specific conditions must align.</td></tr>
+                            <tr><td class="py-0 text-xs"><strong>1</strong></td><td class="py-0 text-xs">Rare; <20% chance; theoretical but unlikely to occur.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- END SCORING CRITERIA TABLES -->
+
+            <!-- ** VISUAL P/I MATRIX (Moved from old Section 4) ** -->
+            <div class="mb-6">
+                <h3 class="font-header text-lg font-bold mb-3 text-primary-dark text-center">Mandate Zones (P x I Score)</h3>
+                <div class="pi-matrix">
+                    <!-- Y-Axis Labels (Probability) -->
+                    <div class="pi-label-y" style="grid-row: 1 / 2;">P (<strong>5</strong>)</div>
+                    <div class="pi-label-y" style="grid-row: 2 / 3;">P (<strong>4</strong>)</div>
+                    <div class="pi-label-y" style="grid-row: 3 / 4;">P (<strong>3</strong>)</div>
+                    <div class="pi-label-y" style="grid-row: 4 / 5;">P (<strong>2</strong>)</div>
+                    <div class="pi-label-y" style="grid-row: 5 / 6;">P (<strong>1</strong>)</div>
+                    
+                    <!-- X-Axis Labels (Impact) -->
+                    <div class="pi-label-x" style="grid-column: 2 / 3;">I (<strong>1</strong>)</div>
+                    <div class="pi-label-x" style="grid-column: 3 / 4;">I (<strong>2</strong>)</div>
+                    <div class="pi-label-x" style="grid-column: 4 / 5;">I (<strong>3</strong>)</div>
+                    <div class="pi-label-x" style="grid-column: 5 / 6;">I (<strong>4</strong>)</div>
+                    <div class="pi-label-x" style="grid-column: 6 / 7;">I (<strong>5</strong>)</div>
+
+                    <!-- Top-Left Corner -->
+                    <div class="pi-corner"></div>
+
+                    <!-- MATRIX CELLS (Mapping P x I to Score and Zone) - Logic (<=3 Green, 4-15 Yellow, >=16 Red) -->
+                    
+                    <!-- Row 5 (P=5) -->
+                    <div class="pi-cell medium-zone" style="grid-area: 1 / 2;">5</div>
+                    <div class="pi-cell medium-zone" style="grid-area: 1 / 3;">10</div>
+                    <div class="pi-cell medium-zone" style="grid-area: 1 / 4;">15</div>
+                    <div class="pi-cell high-zone" style="grid-area: 1 / 5;">20</div>
+                    <div class="pi-cell high-zone" style="grid-area: 1 / 6;">25</div>
+
+                    <!-- Row 4 (P=4) -->
+                    <div class="pi-cell medium-zone" style="grid-area: 2 / 2;">4</div>
+                    <div class="pi-cell medium-zone" style="grid-area: 2 / 3;">8</div>
+                    <div class="pi-cell medium-zone" style="grid-area: 2 / 4;">12</div>
+                    <div class="pi-cell high-zone" style="grid-area: 2 / 5;">16</div>
+                    <div class="pi-cell high-zone" style="grid-area: 2 / 6;">20</div>
+
+                    <!-- Row 3 (P=3) -->
+                    <div class="pi-cell low-zone" style="grid-area: 3 / 2;">3</div>
+                    <div class="pi-cell medium-zone" style="grid-area: 3 / 3;">6</div>
+                    <div class="pi-cell medium-zone" style="grid-area: 3 / 4;">9</div>
+                    <div class="pi-cell medium-zone" style="grid-area: 3 / 5;">12</div>
+                    <div class="pi-cell medium-zone" style="grid-area: 3 / 6;">15</div>
+                    
+                    <!-- Row 2 (P=2) -->
+                    <div class="pi-cell low-zone" style="grid-area: 4 / 2;">2</div>
+                    <div class="pi-cell medium-zone" style="grid-area: 4 / 3;">4</div>
+                    <div class="pi-cell medium-zone" style="grid-area: 4 / 4;">6</div>
+                    <div class="pi-cell medium-zone" style="grid-area: 4 / 5;">8</div>
+                    <div class="pi-cell medium-zone" style="grid-area: 4 / 6;">10</div>
+                    
+                    <!-- Row 1 (P=1) -->
+                    <div class="pi-cell low-zone" style="grid-area: 5 / 2;">1</div>
+                    <div class="pi-cell low-zone" style="grid-area: 5 / 3;">2</div>
+                    <div class="pi-cell low-zone" style="grid-area: 5 / 4;">3</div>
+                    <div class="pi-cell medium-zone" style="grid-area: 5 / 5;">4</div>
+                    <div class="pi-cell medium-zone" style="grid-area: 5 / 6;">5</div>
+
+                </div>
+                <p class="text-center text-sm mt-2 font-semibold">
+                    <span class="inline-block w-3 h-3 rounded-full bg-threat-red"></span> HIGH PRIORITY (AVOID/EXPLOIT) | 
+                    <span class="inline-block w-3 h-3 rounded-full bg-opportunity-yellow"></span> ACTIVE ATTENTION (MITIGATE/ENHANCE) | 
+                    <span class="inline-block w-3 h-3 rounded-full bg-[#a2c62c]"></span> TRACK & MONITOR (ACCEPT)
+                </p>
+            </div>
+            <!-- END VISUAL P/I MATRIX -->
+
+            <!-- NEW TEXT EXPLANATION - MAKING IT SEAMLESS -->
+            <div class="p-3 bg-opportunity-yellow/20 rounded-xl border border-opportunity-yellow mb-6">
+                <h4 class="font-header text-lg font-bold text-primary-dark mb-1">How the Score Works:</h4>
+                <p class="font-body text-sm text-gray-700">The matrix shows that your mandate is driven by the product of Probability x Impact:
+                    <ul class="list-disc list-inside mt-2 space-y-1 text-sm">
+                        <li><strong>Score &le; 3 (Green Zone):</strong> Track & Monitor mandate (ACCEPT). Low risk, low commitment needed.</li>
+                        <li><strong>Score 4–15 (Yellow Zone):</strong> Active Attention mandate (MITIGATE/ENHANCE). Requires a defined plan and resources.</li>
+                        <li><strong>Score &ge; 16 (Red Zone):</strong> HIGH PRIORITY mandate (AVOID/EXPLOIT). Requires aggressive, immediate action.</li>
+                    </ul>
+                </p>
+            </div>
+
+
+            <h3 class="font-header text-2xl font-extrabold mt-6 mb-4 text-primary-dark text-center">
+                Your Playbook Actions: The Strategy List
+            </h3>
+            <p class="font-body text-base mb-4 text-center">
+                Once you know your mandate (Red, Yellow, or Green), select the precise strategy. The goal is simple: <strong>Build stability and maximize team potential.</strong>
+            </p>
+
+            <!-- THREATS -->
+            <div class="border-4 border-threat-red p-4 rounded-xl mb-6 bg-red-50/50 shadow-inner"> <!-- Reduced padding/margin -->
+                <h3 class="font-header text-xl font-bold mb-3 text-threat-red flex items-center"> <!-- Reduced font size -->
+                    <span class="text-3xl mr-2">🛡️</span> Stability Moves (Threats)
+                </h3>
+                <div class="grid grid-cols-2 gap-3"> <!-- Reduced gap -->
+                    <div class="p-2 bg-white rounded-lg border-2 border-threat-red shadow-md info-card"> <!-- Reduced padding -->
+                        <strong class="text-threat-red font-header text-base">Avoid:</strong> <span class="font-body text-xs">Eliminate the risk source. <strong>Action Example:</strong> Remove a non-compliant service vendor immediately.</span>
+                    </div>
+                    <div class="p-2 bg-white rounded-lg border-2 border-threat-red shadow-md info-card"> <!-- Reduced padding -->
+                        <strong class="text-threat-red font-header text-base">Mitigate:</strong> <span class="font-body text-xs">Shrink Impact/Probability. <strong>Action Example:</strong> Launch cross-training to reduce reliance on one expert.</span>
+                    </div>
+                    <div class="p-2 bg-white rounded-lg border-2 border-threat-red shadow-md info-card"> <!-- Reduced padding -->
+                        <strong class="text-threat-red font-header text-base">Transfer:</strong> <span class="font-body text-xs">Shift consequences to a third party. <strong>Action Example:</strong> Buy insurance or include a penalty clause in a contract.</span>
+                    </div>
+                    <div class="p-2 bg-white rounded-lg border-2 border-threat-red shadow-md info-card"> <!-- Reduced padding -->
+                        <strong class="text-threat-red font-header text-base">Accept:</strong> <span class="font-body text-xs">Take no action, but monitor. <strong>Action Example:</strong> Document the risk and assign an owner for weekly checks.</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- OPPORTUNITIES -->
+            <div class="border-4 border-accent-blue p-4 rounded-xl bg-accent-blue/50 shadow-inner"> <!-- Changed to accent-blue for consistent opportunity branding -->
+                <h3 class="font-header text-xl font-bold mb-3 text-primary-dark flex items-center"> <!-- Reduced font size -->
+                    <span class="text-3xl mr-2 text-primary-dark">🚀</span> Growth Moves (Opportunities)
+                </h3>
+                <div class="grid grid-cols-2 gap-3"> <!-- Reduced gap -->
+                    <div class="p-2 bg-white rounded-lg border-2 border-accent-blue shadow-md info-card">
+                        <strong class="text-accent-blue font-header text-base">Exploit:</strong> <span class="font-body text-xs">Commit resources to <strong>guarantee</strong> the benefit. <strong>Action Example:</strong> Immediately redirect unplanned capacity to build a new feature prototype.</span>
+                    </div>
+                    <div class="p-2 bg-white rounded-lg border-2 border-accent-blue shadow-md info-card">
+                        <strong class="text-accent-blue font-header text-base">Enhance:</strong> <span class="font-body text-xs">Increase the likelihood or size of the benefit. <strong>Action Example:</strong> Invest in new training to boost team capability linked to the opportunity.</span>
+                    </div>
+                    <div class="p-2 bg-white rounded-lg border-2 border-accent-blue shadow-md info-card">
+                        <strong class="text-accent-blue font-header text-base">Share:</strong> <span class="font-body text-xs">Collaborate to maximize collective benefits. <strong>Action Example:</strong> Form a joint venture with a trusted partner to leverage market entry costs.</span>
+                    </div>
+                    <div class="p-2 bg-white rounded-lg border-2 border-accent-blue shadow-md info-card">
+                        <strong class="text-accent-blue font-header text-base">Accept:</strong> <span class="font-body text-xs">Be prepared to implement if it occurs. <strong>Action Example:</strong> Document a high-level plan, but save resources for now.</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: THE INTERACTIVE RISK CALCULATOR (Renumbered) -->
+        <section class="mb-8 p-5 bg-white rounded-xl shadow-2xl border-t-8 border-opportunity-yellow"> <!-- Reduced padding/margin -->
+            <h2 class="font-header text-2xl font-extrabold mb-5 text-primary-dark text-center flex items-center justify-center"> <!-- Reduced header size -->
+                <span class="text-3xl mr-3 text-opportunity-yellow">🧮</span> 4. The Strategy Finder: Interactive Practice
+            </h2>
+            <p class="font-body text-base mb-6 text-center"> <!-- Reduced font size -->
+                <strong>Practice time!</strong> Score your risk using the official enterprise criteria (Section 3), and instantly get the correct strategic mandate and log your action.
+            </p>
+            
+            <div class="space-y-3 max-w-2xl mx-auto p-4 bg-bg-light rounded-xl shadow-lg border border-gray-200"> <!-- Reduced padding/spacing -->
+                
+                <h3 class="font-header text-lg font-bold mb-3 text-primary-dark border-b pb-2">Risk Register Entry</h3> <!-- Reduced font size/margin -->
+
+                <!-- Risk Event Description -->
+                <div class="grid grid-cols-3 gap-3 items-center"> <!-- Reduced gap -->
+                    <label for="risk_description" class="font-header text-xs font-semibold text-primary-dark col-span-1">Risk Event Description:</label> <!-- Reduced font size -->
+                    <input type="text" id="risk_description" placeholder="Ex: High-value project resource might resign."
+                       class="w-full p-2 border-2 border-gray-300 rounded-lg font-body focus:ring-accent-blue focus:border-accent-blue col-span-2 text-sm"> <!-- Reduced font size -->
+                </div>
+
+                <!-- Threat or Opportunity -->
+                <div class="grid grid-cols-3 gap-3 items-center"> <!-- Reduced gap -->
+                    <label for="risk_type" class="font-header text-xs font-semibold text-primary-dark col-span-1">1. Type (T/O):</label> <!-- Reduced font size -->
+                    <select id="risk_type" class="w-full p-2 border-2 border-gray-300 rounded-lg font-body focus:ring-accent-blue focus:border-accent-blue col-span-2 text-sm"> <!-- Reduced font size -->
+                        <option value="">-- Select Type --</option>
+                        <option value="threat">Threat (Negative)</option>
+                        <option value="opportunity">Opportunity (Positive)</option>
+                    </select>
+                </div>
+                
+                <!-- Probability Slider -->
+                <div class="grid grid-cols-3 gap-3 items-center"> <!-- Reduced gap -->
+                    <label for="probability" class="font-header text-xs font-semibold text-primary-dark col-span-1">2. Probability (1-5):</label> <!-- Reduced font size -->
+                    <div class="col-span-2 flex items-center space-x-2"> <!-- Reduced space-x -->
+                        <span id="prob_val" class="text-accent-blue font-bold text-base w-7 text-center">3</span> <!-- Reduced font size/width -->
+                        <input type="range" id="probability" min="1" max="5" value="3" 
+                               oninput="document.getElementById('prob_val').innerText = this.value"
+                               class="flex-grow h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer range-lg">
+                    </div>
+                </div>
+
+                <!-- Impact Slider -->
+                <div class="grid grid-cols-3 gap-3 items-center"> <!-- Reduced gap -->
+                    <label for="impact" class="font-header text-xs font-semibold text-primary-dark col-span-1">3. Impact (1-5):</label> <!-- Reduced font size -->
+                    <div class="col-span-2 flex items-center space-x-2"> <!-- Reduced space-x -->
+                        <span id="impact_val" class="text-threat-red font-bold text-base w-7 text-center">3</span> <!-- Reduced font size/width -->
+                        <input type="range" id="impact" min="1" max="5" value="3" 
+                               oninput="document.getElementById('impact_val').innerText = this.value"
+                               class="flex-grow h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer range-lg accent-threat-red">
+                    </div>
+                </div>
+
+                <button id="find_mandate_button" onclick="calculateRiskResponse()"
+                        class="action-button w-full mt-4 p-3 font-header text-lg font-bold text-white bg-primary-dark rounded-xl shadow-shadow-color hover:bg-accent-blue"> <!-- Reduced padding/margin -->
+                    STEP 1: FIND MY MANDATE
+                </button>
+                
+                <!-- Feedback Box (This dynamically changes based on the step) -->
+                <div id="feedback_box" class="mt-3 p-4 rounded-xl bg-gray-100 text-center text-primary-dark border-2 border-gray-300 shadow-inner"> <!-- Reduced padding/margin -->
+                    <p class="text-sm font-body">Input your risk details above and click 'STEP 1' to determine your mandate.</p> <!-- Reduced font size -->
+                </div>
+            </div>
+
+            <!-- RISK REGISTER TABLE (The Stacked Output) -->
+            <div class="mt-8 overflow-x-auto"> <!-- Reduced margin -->
+                <h3 class="font-header text-xl font-bold mb-3 text-primary-dark flex items-center"> <!-- Reduced font size/margin -->
+                    <span class="text-3xl mr-2 text-primary-dark">📋</span> Your Practice Risk Register
+                </h3>
+                <table class="register-table w-full bg-white rounded-xl shadow-lg border border-gray-200">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Risk Event</th>
+                            <th>Type</th>
+                            <th>P</th>
+                            <th>I</th>
+                            <th>Score</th>
+                            <th>Priority Zone</th>
+                            <th>Strategy Mandate</th>
+                            <th class="w-1/4">Action Item</th>
+                        </tr>
+                    </thead>
+                    <tbody id="risk_register_table_body">
+                        <!-- Risk rows will be inserted here by JavaScript -->
+                    </tbody>
+                </table>
+                <p class="text-xs text-gray-500 mt-2 italic font-body"> <!-- Reduced font size -->
+                    *P=Probability, I=Impact. High Score (P x I) mandates aggressive action.
+                </p>
+            </div>
+        </section>
+
+        <!-- CONCLUSION -->
+        <footer class="text-center pt-6 pb-3"> <!-- Reduced padding -->
+            <p class="font-header text-3xl font-extrabold text-primary-dark">
+                You're set!
+            </p>
+            <p class="font-body text-base font-semibold text-primary-dark mt-2"> <!-- Reduced font size -->
+                By following this playbook, you’re actively <strong>fostering a culture of resilience, protecting your team, and taking ownership</strong> of our shared success across the entire Enterprise!
+            </p>
+        </footer>
+    </div>
+</body>
+</html>
